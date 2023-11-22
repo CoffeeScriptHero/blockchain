@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="3a000285-e4b1-44e3-a01a-5a7e1fcd57f0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Blockchain.java" beforeDir="false" afterPath="$PROJECT_DIR$/Blockchain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlockchainDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/RestController.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../../../.." />
+  </component>
+  <component name="ProjectId" id="2YY9Q2igwWKbXEDEQTc81QcXAEK" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "D:/IdeaProjects/Blockchain/src/main/java/com/kozarenko/lab4",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3a000285-e4b1-44e3-a01a-5a7e1fcd57f0" name="Changes" comment="" />
+      <created>1700691625958</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1700691625958</updated>
+      <workItem from="1700691626942" duration="11000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

@@ -1,21 +1,27 @@
 package com.kozarenko.lab4;
 
 import com.google.common.hash.Hashing;
+import com.google.gson.Gson;
 import com.kozarenko.lab4.exception.LowBalanceException;
 import com.kozarenko.lab4.exception.NonExistentWalletException;
+import org.eclipse.jetty.http.HttpStatus;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static com.kozarenko.lab3.BlockchainUtils.*;
+import static com.kozarenko.lab4.BlockchainUtils.*;
 
 public class Blockchain {
 
-    private final List<Block> chain = new ArrayList<>();
+    private List<Block> chain = new ArrayList<>();
     private final List<Wallet> wallets = new ArrayList<>();
     private final MemoryPool memoryPool = new MemoryPool();
+    private final Set<String> nodes = new HashSet<>();
 
     public Blockchain() {
         wallets.add(new Wallet(BLOCKCHAIN_ADDRESS, 1000000000));
@@ -23,6 +29,10 @@ public class Blockchain {
         wallets.add(new Wallet("a14f0d66a18a46819946767058e04073", 5));
         wallets.add(new Wallet("b25144cc205445bd84b5864e54ecb627", 2));
         newBlock(312003, "Kozarenko");
+    }
+
+    public void registerNode(String node) {
+        nodes.add(node);
     }
 
     public static String hash(Block block) {
@@ -70,6 +80,58 @@ public class Blockchain {
 
     public Block lastBlock() {
         return chain.size() > 0 ? chain.get(chain.size() - 1) : null;
+    }
+
+    public List<Block> chain() {
+        return chain;
+    }
+
+    public Set<String> nodes() { return nodes; }
+
+    public void resolveConflicts() {
+        Gson gson = new Gson();
+        int maxLen = chain.size();
+
+        try {
+            for (String host : nodes) {
+                URL url = new URL(host + "/chain");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                StringBuffer content = new StringBuffer();
+                if (connection.getResponseCode() == HttpStatus.OK_200) {
+                    try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                        String inputLine;
+                        while ((inputLine = in.readLine()) != null) {
+                            content.append(inputLine);
+                        }
+                    }
+                    connection.disconnect();
+                    ChainDTO response = gson.fromJson(content.toString(), ChainDTO.class);
+                    if (response.getLength() > maxLen && validChain(response.getChain())) {
+                        maxLen = response.getLength();
+                        this.chain = response.getChain();
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public boolean validChain(List<Block> chain) {
+        for (int i = 1; i < chain.size(); i++) {
+            Block lastBlock = chain.get(chain.size() - i);
+            Block currBlock = chain.get(i);
+            if (!currBlock.getPrevHash().equals(hash(lastBlock))) {
+                System.out.println("Hash doesn't match");
+                return false;
+            }
+            if (!isProofValid(lastBlock.getNonce(), currBlock.getNonce())) {
+                System.out.println("Proof is not valid");
+                return false;
+            }
+        }
+        return true;
     }
 
     public int proofOfWork(int lastProof) {

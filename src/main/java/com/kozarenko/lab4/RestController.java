@@ -5,8 +5,11 @@ import com.google.gson.JsonSyntaxException;
 import com.kozarenko.lab4.exception.LowBalanceException;
 import com.kozarenko.lab4.exception.NonExistentWalletException;
 import org.eclipse.jetty.http.HttpStatus;
+import spark.Spark;
 
-import static com.kozarenko.lab3.BlockchainUtils.MINER_ADDRESS;
+import java.util.List;
+
+import static com.kozarenko.lab4.BlockchainUtils.MINER_ADDRESS;
 import static spark.Spark.get;
 import static spark.Spark.post;
 
@@ -14,12 +17,8 @@ public class RestController {
 
     private void setupBlockchainEndpoint(Blockchain blockchain, Gson gson) {
         get("/chain", (req, res) -> {
-            BlockchainDTO blockchainDTO = new BlockchainDTO();
-            blockchainDTO.setChain(blockchain.toString());
-            blockchainDTO.setLength(blockchain.size());
-
             res.status(HttpStatus.OK_200);
-            return gson.toJson(blockchainDTO);
+            return gson.toJson(new ChainDTO(blockchain.chain(), blockchain.size()));
         });
     }
 
@@ -66,6 +65,21 @@ public class RestController {
         });
     }
 
+    private void setupNodesRegistrationEndpoint(Blockchain blockchain, Gson gson) {
+        post("/nodes", (req, res) -> {
+            List<String> nodes = gson.fromJson(req.body(), NodesDTO.class).getNodes();
+            nodes.forEach(blockchain::registerNode);
+            return gson.toJson(blockchain.nodes());
+        });
+    }
+
+    private void setupNodesResolveEndpoint(Blockchain blockchain, Gson gson) {
+        get("/nodes/resolve", (req, res) -> {
+            blockchain.resolveConflicts();
+            return gson.toJson(new ChainDTO(blockchain.chain(), blockchain.chain().size()));
+        });
+    }
+
 
     public static void main(String[] args) {
         RestController restController = new RestController();
@@ -75,5 +89,7 @@ public class RestController {
         restController.setupMineEndpoint(blockchain, gson);
         restController.setupTransactionEndpoint(blockchain, gson);
         restController.setupBlockchainEndpoint(blockchain, gson);
+        restController.setupNodesRegistrationEndpoint(blockchain, gson);
+        restController.setupNodesResolveEndpoint(blockchain, gson);
     }
 }
